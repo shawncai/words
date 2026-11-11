@@ -1,6 +1,7 @@
 import { Volume2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { play } from "../lib/audio";
+import { toast } from "./Toast";
 
 export function Speak({
   url,
@@ -22,13 +23,18 @@ export function Speak({
   kbd?: string;
 }) {
   const [on, setOn] = useState(false);
+  const request = useRef(0);
   const run = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setOn(true);
+    const mine = ++request.current;
     try {
-      await play(url, text, accent, rate);
+      const result = await play(url, text, accent, rate);
+      if (result === "unsupported") toast("暂无可用录音，设备也没有可用的离线语音。", "warn");
+    } catch {
+      toast("播放失败，请重试。", "warn");
     } finally {
-      setOn(false);
+      if (mine === request.current) setOn(false);
     }
   };
   return (

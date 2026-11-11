@@ -1,3 +1,4 @@
+import { exportFile } from "../lib/files";
 import { toast } from "../ui/Toast";
 
 const SERIF = '"Fraunces Variable", "Songti SC", "Noto Serif SC", Georgia, serif';
@@ -47,18 +48,9 @@ export async function shareGalaxy(source: HTMLCanvasElement, lit: number, total:
     g.fillText(tag, W - pad - g.measureText(tag).width, H - 28);
     const blob = await new Promise<Blob | null>((r) => c.toBlob(r, "image/png"));
     if (!blob) throw new Error("no blob");
-    const file = new File([blob], "word-atlas-galaxy.png", { type: "image/png" });
-    if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file] }).catch(() => null);
-      return;
-    }
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = file.name;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    toast("星图已保存", "ok");
+    const result = await exportFile(blob, "word-atlas-galaxy.png", "我的词汇星图");
+    if (result === "downloaded") toast("星图已开始下载", "ok");
   } catch {
-    toast("星图生成失败", "warn");
+    toast("星图生成或导出失败，请稍后再试", "warn");
   }
 }

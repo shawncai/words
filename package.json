@@ -12,26 +12,45 @@
     "build:atlas": "python3 scripts/atlas/build_atlas.py",
     "render:cards": "node scripts/render-cards.mjs",
     "pack:public": "python3 scripts/package_public.py --out ../开源发布/word-atlas",
-    "format": "prettier --write src vite.config.ts scripts/*.mjs package.json tsconfig.json"
+    "format": "prettier --write src vite.config.ts scripts/*.mjs package.json tsconfig.json",
+    "android:sync": "pnpm build && cap sync android",
+    "android:build": "bash scripts/build-android.sh",
+    "android:open": "cap open android",
+    "check:mobile": "node scripts/check-mobile.mjs",
+    "check:splash": "node scripts/check-splash.mjs",
+    "check:interface": "node scripts/check-interface.mjs",
+    "check:foldable": "node scripts/check-foldable.mjs",
+    "check:motion": "node scripts/check-motion.mjs"
   },
   "dependencies": {
-    "@fontsource-variable/fraunces": "^5.3.0",
-    "lucide-react": "^0.468.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "ts-fsrs": "^5.4.2"
+    "@fontsource-variable/fraunces": "5.3.0",
+    "lucide-react": "0.468.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "ts-fsrs": "5.4.2",
+    "@capacitor/core": "8.6.0",
+    "@capacitor/android": "8.6.0",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/share": "8.0.3"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^4.7.0",
-    "playwright": "^1.64.1",
-    "prettier": "^3.9.10",
-    "tsx": "^4.23.15",
-    "typescript": "~5.9.3",
-    "vite": "^6.4.1"
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "4.7.0",
+    "playwright": "1.64.1",
+    "prettier": "3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vite": "6.4.5",
+    "@capacitor/cli": "8.6.0"
   },
   "private": true,
-  "license": "MIT"
+  "license": "MIT",
+  "packageManager": "pnpm@8.15.8",
+  "engines": {
+    "node": "22.22.3",
+    "pnpm": "8.15.8"
+  }
 }

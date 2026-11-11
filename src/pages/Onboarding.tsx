@@ -4,10 +4,10 @@ import { useAtlas } from "../atlas/context";
 import { store } from "../store/store";
 
 const LEVELS = [
-  ["A2", "基础", "日常词还不太稳"],
-  ["B1", "进阶", "目标 5.5 – 6 分"],
-  ["B2", "中高", "目标 6.5 – 7 分"],
-  ["C1", "高级", "冲刺 7.5 分以上"],
+  ["A2", "基础"],
+  ["B1", "进阶"],
+  ["B2", "中高"],
+  ["C1", "高级"],
 ];
 
 export function Onboarding() {
@@ -20,38 +20,31 @@ export function Onboarding() {
       <div className="onboard-card">
         <img className="onboard-art" src={`${import.meta.env.BASE_URL}brand/hero.webp`} alt="" />
         <div className="onboard-body">
-          <p className="eyebrow">欢迎来到词光</p>
-          <h1 className="display">
-            {atlas.count.toLocaleString()} 颗星，
-            <br />
-            等你一颗颗点亮。
-          </h1>
+          <h1 className="display">学习设置</h1>
           <fieldset>
-            <legend>你从哪里出发？</legend>
+            <legend>起始难度</legend>
             <div className="choice-grid">
-              {LEVELS.map(([code, name, desc], i) => (
+              {LEVELS.map(([code, name], i) => (
                 <button key={code} className={`choice ${level === i ? "is-on" : ""}`} onClick={() => setLevel(i)} aria-pressed={level === i}>
                   <span className={`chip chip-level lv-${code}`}>{code}</span>
                   <b>{name}</b>
-                  <small>{desc}</small>
                 </button>
               ))}
             </div>
           </fieldset>
           <fieldset>
-            <legend>每天点亮几颗新星？</legend>
+            <legend>每日新词</legend>
             <div className="segmented segmented-wide">
               {[5, 10, 15, 20].map((n) => (
                 <button key={n} className={goal === n ? "is-on" : ""} onClick={() => setGoal(n)} aria-pressed={goal === n}>
-                  {n} 颗{n === 10 ? " · 推荐" : ""}
+                  {n} 词
                 </button>
               ))}
             </div>
           </fieldset>
           <button className="btn btn-primary btn-xl" onClick={finish}>
-            出发 <ArrowRight size={20} />
+            完成设置 <ArrowRight size={20} />
           </button>
-          <p className="muted">不用注册。进度只留在这台设备上，随时可以在「我的」里修改。</p>
         </div>
       </div>
     </div>

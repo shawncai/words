@@ -382,7 +382,6 @@ export function Galaxy({
           <Share2 size={17} />
         </button>
       </div>
-      <p className="galaxy-hint">拖动旋转 · 滚动缩放 · 点击星星打开词条</p>
     </div>
   );
 }

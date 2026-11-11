@@ -21,7 +21,9 @@ export function Illustration({
   const [state, setState] = useState<"loading" | "ok" | "error">("loading");
   const showImg = src && state !== "error";
   return (
-    <figure className={`illo ${showImg && state === "ok" ? "is-loaded" : ""} ${className}`}>
+    <figure
+      className={`illo ${showImg && state === "ok" ? "is-loaded" : ""} ${className}`}
+    >
       {showImg ? (
         <img
           src={src}
@@ -29,11 +31,22 @@ export function Illustration({
           loading={eager ? "eager" : "lazy"}
           decoding="async"
           draggable={false}
+          width={512}
+          height={512}
           onLoad={() => setState("ok")}
           onError={() => setState("error")}
         />
       ) : (
-        <div className="plate" style={{ "--hue": HUES[topic % HUES.length], "--len": Math.max(4, word.length) } as React.CSSProperties} aria-hidden="true">
+        <div
+          className="plate"
+          style={
+            {
+              "--hue": HUES[topic % HUES.length],
+              "--len": Math.max(4, word.length),
+            } as React.CSSProperties
+          }
+          aria-hidden="true"
+        >
           <span className="plate-initial">{word.slice(0, 1)}</span>
           <span className="plate-word">{word}</span>
           <i className="plate-rule" />

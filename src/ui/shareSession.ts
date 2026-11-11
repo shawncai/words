@@ -1,3 +1,4 @@
+import { exportFile } from "../lib/files";
 import type { Atlas } from "../atlas/types";
 import { sessionStats } from "../store/session";
 import { Rating } from "../store/srs";
@@ -78,18 +79,9 @@ export async function shareSession(atlas: Atlas, s: ActiveSession) {
     ctx.fillText(tag, W - pad - ctx.measureText(tag).width, H - 60);
     const blob = await new Promise<Blob | null>((r) => c.toBlob(r, "image/png"));
     if (!blob) throw new Error();
-    const file = new File([blob], `word-atlas-${d.toISOString().slice(0, 10)}.png`, { type: "image/png" });
-    if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file] }).catch(() => null);
-      return;
-    }
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = file.name;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    toast("成绩卡已保存", "ok");
+    const result = await exportFile(blob, `word-atlas-${d.toISOString().slice(0, 10)}.png`, "今日学习成绩");
+    if (result === "downloaded") toast("成绩卡已开始下载", "ok");
   } catch {
-    toast("成绩卡生成失败", "warn");
+    toast("成绩卡生成或导出失败，请稍后再试", "warn");
   }
 }

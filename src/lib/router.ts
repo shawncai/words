@@ -69,8 +69,8 @@ export const useLocation = () =>
 
 export function go(route: Route, word?: string | null, replace = false) {
   const h = href(route, word);
-  if (replace) history.replaceState(null, "", h);
-  else history.pushState(null, "", h);
+  if (replace) history.replaceState(history.state, "", h);
+  else history.pushState(word && !loc.word ? { wordAtlasSheet: true } : null, "", h);
   const next = parse(h);
   const pageChange = next.route.page !== loc.route.page;
   const update = () => {
@@ -81,6 +81,12 @@ export function go(route: Route, word?: string | null, replace = false) {
   else update();
 }
 
-export const openWord = (id: string) => go(loc.route, id);
-export const closeWord = () => go(loc.route, null);
+export const openWord = (id: string) => go(loc.route, id, !!loc.word);
+export const closeWord = () => {
+  if (!loc.word) return;
+  // Pop a sheet that we opened, instead of appending a closed copy which would
+  // reopen it on the next Android/browser Back. Deep links have no parent entry.
+  if (history.state?.wordAtlasSheet) history.back();
+  else go(loc.route, null, true);
+};
 export const currentLocation = () => loc;

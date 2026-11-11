@@ -2,6 +2,7 @@ import { AudioLines, Check, CloudRain, Coffee, Flame, Sailboat, Sparkles, Trees,
 import { useEffect, useRef, useState } from "react";
 import { AMBIENCE, primeCues, setAmbience, type AmbienceId } from "../lib/sound";
 import { store, useStore } from "../store/store";
+import { registerBackHandler } from "../lib/native";
 
 const ICONS: Record<AmbienceId, typeof CloudRain> = { stars: Sparkles, rain: CloudRain, sea: Waves, forest: Trees, fire: Flame, voyage: Sailboat, cafe: Coffee };
 
@@ -11,6 +12,12 @@ export function AmbienceController() {
   const volume = useStore((s) => s.settings.ambienceVolume);
   const [armed, setArmed] = useState(false);
   useEffect(() => {
+    const suspend = () => setArmed(false);
+    window.addEventListener("word-atlas:audio-suspend", suspend);
+    return () => window.removeEventListener("word-atlas:audio-suspend", suspend);
+  }, []);
+  useEffect(() => {
+    if (armed) return;
     const arm = () => {
       primeCues();
       setArmed(true);
@@ -21,7 +28,7 @@ export function AmbienceController() {
       window.removeEventListener("pointerdown", arm);
       window.removeEventListener("keydown", arm);
     };
-  }, []);
+  }, [armed]);
   useEffect(() => {
     if (armed) void setAmbience(ambience === "off" ? null : ambience, volume);
   }, [armed, ambience, volume]);
@@ -35,12 +42,14 @@ export function AmbiencePicker() {
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
+    const unregisterBack = registerBackHandler(() => setOpen(false));
     const close = (e: Event) => {
       if (e instanceof KeyboardEvent ? e.key === "Escape" : !box.current?.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("pointerdown", close);
     document.addEventListener("keydown", close);
     return () => {
+      unregisterBack();
       document.removeEventListener("pointerdown", close);
       document.removeEventListener("keydown", close);
     };
@@ -54,7 +63,7 @@ export function AmbiencePicker() {
       </button>
       {open && (
         <div className="amb-pop" role="dialog" aria-label="环境声">
-          <p className="eyebrow">环境声 · 专注陪伴</p>
+          <p className="eyebrow">环境声</p>
           <ul>
             {AMBIENCE.map(({ id, label }) => {
               const Icon = ICONS[id];
@@ -81,7 +90,6 @@ export function AmbiencePicker() {
             <span>音量</span>
             <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => store.settings({ ambienceVolume: Number(e.target.value) })} disabled={!on} />
           </label>
-          <p className="amb-note">读单词时会自动压低环境声。</p>
         </div>
       )}
     </div>

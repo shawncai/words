@@ -1,197 +1,102 @@
-<div align="center">
+# 词光 · Android 完整离线版
 
-<a href="https://0xlei.tech/words/"><img src="docs/assets/cover-v2.jpg" alt="词光 Word Atlas — 一词一画，点亮雅思" width="100%"></a>
+基于 [designfuchen/word-atlas（Word Atlas / 词光）](https://github.com/designfuchen/word-atlas) 二次开发的 Android 背单词应用。原项目由 [designfuchen](https://github.com/designfuchen) 与 Word Atlas contributors 开发，本仓库由 [shawncai](https://github.com/shawncai) 维护 Android 封装、手机与折叠屏适配。
 
-# 词光 · Word Atlas
+开发基线为上游提交 [`c70d57d2`](https://github.com/designfuchen/word-atlas/commit/c70d57d2b697f4de6ad512c62ba9495c4e5dc61c)。这是独立衍生版本，不代表原作者官方 Android 发行版；原有词库、插画、录音与学习算法来自上游，保留原作者和内容署名。
 
-**把单词变成画面，让复习有迹可循。**
+[English](README.en.md) · [Android 构建与安装](docs/android.md) · [依赖版本与审查](docs/android-dependencies.md) · [词库格式](docs/dataset.md)
 
-7,298 个雅思词条 · 原创插画 · 英美发音 · FSRS 间隔复习
+## 功能
 
-[**立即体验 ↗**](https://0xlei.tech/words/)　 /　 [48 秒介绍](docs/assets/launch.mp4)　 /　 [下载词库](data/)　 /　 [English](README.en.md)
+- 7,298 个词条，覆盖 CEFR A1–C2 和 19 个话题；包含插画、中英释义、例句、搭配与用法提示。
+- FSRS 间隔复习、每日学习、看义选词、看图补句、听音辨词与拼写测验。
+- 图鉴搜索、收藏、词汇星图、打字练习、学习统计和设置。
+- 无需账号、后端或 API Key，进度保存在设备本地；支持 JSON 备份导出与恢复。
 
-[![Code: MIT](https://img.shields.io/badge/Code-MIT-17283B?style=flat-square)](LICENSE)
-[![Dataset: CC BY 4.0](https://img.shields.io/badge/Dataset-CC_BY_4.0-AD5038?style=flat-square)](CONTENT_LICENSE.md)
+## 本仓库的改动
 
-<br>
+- 使用官方 Capacitor 封装 Android 应用，应用名「词光」，包名 `com.zhangcuncai.wordatlas`。
+- 将词库、插画、已有录音、字体及音效打包进 APK，安装后首次启动也可离线使用；原生版不启用网页 Service Worker。
+- 适配安全区、触控热区、软键盘、Android 返回键、后台保存和声音暂停。
+- 接入系统文件选择与分享面板，沿用上游 v2 进度和备份格式。
+- 手机学习页纵向阅读；展开窗口使用侧边导航、多列图鉴及图文并排词卡，调整窗口时保留学习和输入状态。
+- 固定品牌顶部栏仅在首页显示；收紧页面留白，减少大圆角、冗余描述、嵌套卡框与阴影。
+- 周统计柱和学习进度条使用 `transform` 动画，保留原有颜色与缓动。
 
-**词光 iOS App 测试版已开放，免费下载：[api.billswise.cn/app](https://api.billswise.cn/app/)**
-
-[![关注 @yangleiocx3](https://img.shields.io/badge/%E5%85%B3%E6%B3%A8%E6%88%91-@yangleiocx3-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/yangleiocx3)
-
-</div>
-
----
-
-词光是一款以插画和语境为核心的雅思背词应用。看画面理解词义，听发音建立联系，再用主动回忆和间隔复习巩固记忆。无需账号，学习进度保存在自己的设备上。
-
-> **版本说明**：这个仓库提供词光的开源基础版及配套数据集。在线网站独立迭代，功能与仓库可能不同；仓库里的代码和内容分别遵循下方的 MIT / CC BY 4.0 授权。
-
-[产品预览](#产品预览) · [学习方式](#学习方式) · [本地运行](#本地运行) · [开放数据](#开放数据) · [参与贡献](#参与贡献)
-
-## 产品预览
-
-### 一本可以听、可以练的单词图鉴
-
-<img src="docs/assets/atlas-desktop.jpg" alt="开源版桌面图鉴：插画词卡和词汇浏览" width="100%">
-
-<table>
-<tr>
-<td width="50%"><img src="docs/assets/today-mobile.jpg" alt="手机端今日学习页" width="100%"></td>
-<td width="50%"><img src="docs/assets/word-mobile.jpg" alt="手机端词卡，展示插画、英美发音与例句" width="100%"></td>
-</tr>
-<tr><td align="center">每日计划，把注意力放在今天</td><td align="center">插画、词义、发音，在一张词卡里</td></tr>
-</table>
-
-<sub>以上为仓库开源版的实际界面。页首为品牌概念插画。</sub>
-
-### 学过的词，汇成自己的星图
-
-<img src="docs/assets/galaxy.jpg" alt="词汇星图界面：按话题组织单词，展示学习进度" width="100%">
-
-19 个话题组成词汇星图。拖动旋转、滚动缩放，点击星星打开词卡；学习状态用不同亮度呈现。采用 WebGL2 渲染，不支持的设备提供降级显示。
-
-<details>
-<summary><b>看 48 秒宣传片</b></summary>
-
-<a href="docs/assets/launch.mp4"><img src="docs/assets/launch-preview.webp" alt="点击观看词光宣传片" width="100%"></a>
-
-[播放完整视频（含声音）](docs/assets/launch.mp4)
-
-</details>
-
-## 学习方式
-
-| 环节 | 你会做什么 |
-| :--- | :--- |
-| **看见** | 每个词配一幅插画、中英释义、两条原创例句，以及搭配、词族和用法提示。 |
-| **听见** | 切换英音、美音，听日常例句朗读；部分词条另含第二条例句录音。 |
-| **想起** | 看义选词、看图补句、听音辨词、拼写，逐步练习主动回忆。 |
-| **复习** | FSRS 根据学习记录安排复习，目标记忆率可调。只有首次作答计入正确率。 |
-| **积累** | 星图展示学习进度；打字练习独立统计；支持导出和恢复本地进度。 |
-
-**本地优先。** 无需注册；看过的词条与媒体可缓存供离线使用。换设备前，请先导出进度备份。
-
-<details>
-<summary><b>听发音、例句与环境声样本</b></summary>
-
-
-
-拿 *abandon* 举例，点开就能听（在线播放）：
-
-| | |
-|---|---|
-| 🇬🇧 英音 | [abandon /əˈbændən/](https://0xlei.tech/words/atlas/audio/uk/abandon.mp3) |
-| 🇺🇸 美音 | [abandon /əˈbændən/](https://0xlei.tech/words/atlas/audio/us/abandon.mp3) |
-| 📖 例句朗读 | [We had to abandon our car in the snow.](https://0xlei.tech/words/atlas/audio/ex/abandon.mp3) |
-
-全部 7,298 个词都有英音、美音和例句朗读，还有 1,011 个重点词的第二条例句也配了朗读。
-
-### 环境声与交互声音
-
-| | |
-|---|---|
-| 🎙 **开屏配音** | [「欢迎打开雅思大门」](https://0xlei.tech/words/sfx/splash-voice.mp3)：星尘汇聚成“词光”，大门打开 |
-| 🌌 **星图配音** | [「这是你的词汇星图。每学会一个词，就点亮一颗星。」](https://0xlei.tech/words/sfx/voice-galaxy-hello.mp3) |
-| 🎵 **星空音乐** | [一段可无缝循环的原创配乐](https://0xlei.tech/words/sfx/amb-stars.mp3)，默认陪你背词 |
-| 🌧 **6 段环境声** | [雨天图书馆](https://0xlei.tech/words/sfx/amb-rain.mp3) · [清晨海岸](https://0xlei.tech/words/sfx/amb-sea.mp3) · [林间早晨](https://0xlei.tech/words/sfx/amb-forest.mp3) · [夜晚壁炉](https://0xlei.tech/words/sfx/amb-fire.mp3) · [远航船舱](https://0xlei.tech/words/sfx/amb-voyage.mp3) · [安静咖啡馆](https://0xlei.tech/words/sfx/amb-cafe.mp3) |
-| ✨ **界面音效** | 答对、答错、翻卡、打字、连胜、点亮星星……每个操作都有自己的声音；读单词时背景音会自动压低 |
-
-全部素材都在仓库里：插画在 `public/atlas/img/`，录音在 `public/atlas/audio/`，这两类按 CC BY 4.0 开放；界面声音和配乐在 `public/sfx/`，随应用一起提供。
-
-
-</details>
+不包含账号系统、云同步、应用商店发布或新增词库。缺少现成录音的内容会尝试设备语音，设备语音不可用时明确提示。
 
 ## 本地运行
 
-需要 **Node.js 20+** 和 npm。仓库含完整图片与录音，首次下载可能较久。
+使用 **Node.js 22.22.3** 和 **pnpm 8.15.8**，不使用 npm/yarn，不自动升级已有依赖。
 
 ```bash
-git clone --depth 1 https://github.com/designfuchen/word-atlas.git
-cd word-atlas
-npm ci
-npm run dev
+git clone https://github.com/shawncai/words.git
+cd words
+source "$HOME/.nvm/nvm.sh"
+nvm install
+nvm use
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-打开 **http://localhost:5188**。
+打开 <http://localhost:5188>。仓库包含完整媒体，首次克隆需要下载数百 MB 文件。开发结束后关闭预览进程；macOS 上生成文件后执行 `dot_clean ./`。
+
+技术栈：React 19、TypeScript、Vite、ts-fsrs、WebGL2、Capacitor 8。
+
+## Android 构建与安装
+
+需要 JDK 21、Android SDK 36 和 Android 构建工具。macOS 环境路径及 ExFAT 外盘缓存处理详见 [Android 文档](docs/android.md)。首次安装依赖和构建需要联网，安装后的应用独立运行。
 
 ```bash
-npm test             # 单元测试
-npm run check:atlas  # 词库结构与媒体校验
-npm run build        # 构建到 dist/
+pnpm android:build
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n com.zhangcuncai.wordatlas/.MainActivity
 ```
 
-子路径部署：`ATLAS_BASE=/words/ npm run build`。完整说明见 [部署文档](docs/deployment.md)。
+完整离线资源约 665 MB，当前 debug APK 约 671 MB。APK、签名密钥、本机 SDK 配置及个人学习数据不纳入源码仓库，安装包需自行构建。
 
-**技术栈**：React 19 · TypeScript · Vite · ts-fsrs · WebGL2
+更新时保留相同包名与签名，使用 `adb install -r`。debug 签名默认由本机 Android 工具生成，换电脑构建前需自行妥善保留签名。不要通过卸载解决签名冲突，以免丢失本地进度；换设备前请导出备份。
 
-## 开放数据
+## 验证
 
-不仅可以直接使用应用，也可以把词库用于自己的学习工具、Anki 牌组或研究项目。
-
-| 资源 | 开源版内容 | 入口 |
-| :--- | :--- | :--- |
-| 词条 | **7,298** 条，CEFR A1–C2、19 个话题 | [JSON](data/word-atlas.json) · [CSV](data/word-atlas.csv) |
-| 例句 | **14,596** 条，日常与雅思语境，附中文翻译 | [字段说明](docs/dataset.md) |
-| 插画 | **7,298** 幅，512 px WebP，另有缩略图 | [图片目录](public/atlas/img/) |
-| 录音 | **22,905** 段，英音、美音与例句朗读 | [音频目录](public/atlas/audio/) |
-
-```python
-import json
-from pathlib import Path
-
-words = json.loads(Path("data/word-atlas.json").read_text(encoding="utf-8"))
-b2_environment = [w for w in words if w["cefr"] == "B2" and w["topic"] == "environment"]
+```bash
+pnpm test
+pnpm check:atlas
+pnpm check:splash
+pnpm build
 ```
 
-<details>
-<summary><b>查看一条词条的数据结构</b></summary>
+以下浏览器检查使用本机 Chrome，需先在另一个终端运行 `pnpm dev`：
 
-```json
-{
-  "id": "principle",
-  "w": "principle",
-  "uk": "/ˈprɪnsəpəl/",
-  "us": "/ˈprɪnsəpəl/",
-  "senses": [{ "pos": "n.", "zh": "原则；行为准则", "en": "A belief or rule that guides decisions and behaviour." }],
-  "ex": [
-    { "en": "I refused the extra money as a matter of principle.", "zh": "出于原则，我拒绝了那笔额外的钱。" },
-    { "en": "The principle of equal opportunity should guide policies designed to improve access to higher education.", "zh": "…" }
-  ],
-  "col": ["in principle｜原则上", "basic principle｜基本原则"],
-  "fam": ["principled (adj.)"],
-  "tip": "principle 是原则；principal 是校长、主要的。",
-  "cefr": "B2",
-  "topic": "thinking"
-}
+```bash
+pnpm check:mobile
+pnpm check:interface
+pnpm check:foldable
+pnpm check:motion
 ```
 
-</details>
+已在 SM-N9760 / Android 12 上验证安装、离线媒体、学习、备份与返回键等流程。折叠屏适配已完成浏览器尺寸与连续切换测试；Galaxy Z Fold8 Ultra 尚未进行真机折叠验证，模拟测试不等于目标设备验收。
 
-### 内容来源与局限
+## 目录
 
-释义、例句、插画和录音为本项目生成：文字与插画使用生成式 AI，语音使用 ElevenLabs。内容经过自动结构与一致性校验，**尚未逐条人工审校**，可能出现释义、例句、插画或发音错误。它不是官方雅思词表，也不承诺提分。
+| 路径 | 内容 |
+| --- | --- |
+| `src/` | React 界面、学习逻辑与原生适配 |
+| `android/` | Android 工程与 Gradle wrapper |
+| `public/` | 包内词库、图片、录音与音效 |
+| `data/` | 上游 JSON / CSV 词库 |
+| `scripts/` | 构建、校验和上游内容生成脚本 |
+| `docs/` | Android、数据结构、记忆模型与内容流程说明 |
 
-[内容生成流程](docs/pipeline.md) · [记忆模型](docs/learning-model.md) · [生成脚本](scripts/atlas/)
+`scripts/atlas/` 保留上游内容生成工具，其外部服务配置不用于日常使用或构建现有离线应用。不要把任何服务凭据写入源码。
 
-## 参与贡献
+## 来源与许可证
 
-发现问题时，请附上**词条 ID、复现步骤和预期结果**。内容纠错如有词典或其他可靠依据，也请一并提供。
+- **上游项目与原作者**：[designfuchen/word-atlas](https://github.com/designfuchen/word-atlas)。感谢原作者开放源码、词库、插画与录音。
+- **代码与界面**：[MIT License](LICENSE)，保留 `Word Atlas contributors` 版权声明。
+- **词库、插画、词条录音**：[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)，署名 **Word Atlas contributors**，具体范围见 [CONTENT_LICENSE.md](CONTENT_LICENSE.md)。本仓库未修改上游学习内容，改动集中于应用封装、界面和运行行为。
+- **第三方依赖与字体**：遵循各自许可证，Fraunces 字体采用 SIL Open Font License 1.1。
 
-- [报告问题](https://github.com/designfuchen/word-atlas/issues/new/choose)：词条纠错、界面问题或使用建议。
-- [贡献指南](CONTRIBUTING.md)：数据同步、代码规范和提交前检查。
-- [安全政策](SECURITY.md)：安全问题的反馈方式。
+上游内容使用生成式 AI 和合成语音制作，经过自动校验但未逐条人工审校，可能存在释义、例句、插画或发音错误。这不是官方雅思词表，也不代表雅思考试主办方。
 
-## 授权
-
-| 范围 | 许可 |
-| :--- | :--- |
-| 应用代码 | [MIT](LICENSE) |
-| 词库文本、插画与词条录音 | [CC BY 4.0](CONTENT_LICENSE.md)，署名 Word Atlas contributors（词光） |
-| 第三方依赖与字体 | 遵循各自许可，详见相应文件 |
-
----
-
-由 [@designfuchen](https://github.com/designfuchen) 制作。产品进展与制作过程见 [X · @yangleiocx3](https://x.com/yangleiocx3)。
-
-如果词光对你有用，欢迎 Star，或把它分享给正在学英语的朋友。
+本衍生版本的问题请提交到 [shawncai/words Issues](https://github.com/shawncai/words/issues)，附词条 ID、设备信息和复现步骤。不要在 Issue 或提交中附账号密码、令牌、签名文件或私人备份。

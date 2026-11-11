@@ -1,3 +1,4 @@
+import { exportFile } from "../lib/files";
 import type { Atlas, Entry } from "../atlas/types";
 import { toast } from "./Toast";
 
@@ -119,18 +120,9 @@ export async function shareWord(atlas: Atlas, e: Entry) {
     const canvas = await renderWordCard(atlas, e);
     const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/png"));
     if (!blob) throw new Error("no blob");
-    const file = new File([blob], `word-atlas-${e.id}.png`, { type: "image/png" });
-    if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file], title: e.w }).catch(() => null);
-      return;
-    }
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = file.name;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    toast("分享卡片已保存", "ok");
+    const result = await exportFile(blob, `word-atlas-${e.id}.png`, e.w);
+    if (result === "downloaded") toast("分享卡片已开始下载", "ok");
   } catch {
-    toast("卡片生成失败，请稍后再试", "warn");
+    toast("卡片生成或导出失败，请稍后再试", "warn");
   }
 }

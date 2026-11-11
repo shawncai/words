@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { registerBackHandler } from "../lib/native";
 
 /** Accessible dialog: centered panel on desktop, bottom sheet on phones. */
 export function Sheet({
@@ -20,6 +21,7 @@ export function Sheet({
   const panel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
+    const unregisterBack = registerBackHandler(onClose);
     const prev = document.activeElement as HTMLElement | null;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -44,6 +46,7 @@ export function Sheet({
     document.documentElement.classList.add("is-locked");
     requestAnimationFrame(() => panel.current?.focus({ preventScroll: true }));
     return () => {
+      unregisterBack();
       document.removeEventListener("keydown", onKey);
       document.documentElement.classList.remove("is-locked");
       prev?.focus?.({ preventScroll: true });

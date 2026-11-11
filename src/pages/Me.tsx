@@ -1,5 +1,6 @@
 import { Download, RotateCcw, Upload } from "lucide-react";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
+import { exportFile } from "../lib/files";
 import { useAtlas } from "../atlas/context";
 import { isMastered } from "../store/srs";
 import { dayKey, exportBackup, importBackup, resetProgress, store, useStore, type Settings } from "../store/store";
@@ -12,6 +13,7 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
   const settings = useStore((s) => s.settings);
   const saveError = useStore((s) => s.saveError);
   const file = useRef<HTMLInputElement>(null);
+  const [exporting, setExporting] = useState(false);
 
   const stats = useMemo(() => {
     const cards = Object.values(progress.cards);
@@ -33,26 +35,45 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
   }, [progress]);
 
   const set = (patch: Partial<Settings>) => store.settings(patch);
-  const download = () => {
-    const blob = new Blob([exportBackup()], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `word-atlas-backup-${dayKey()}.json`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  const download = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const result = await exportFile(new Blob([exportBackup()], { type: "application/json" }), `word-atlas-backup-${dayKey()}.json`, "保存学习备份", false);
+      if (result === "downloaded") toast("备份已开始下载", "ok");
+    } catch {
+      toast("备份导出失败，请检查存储空间后重试。", "warn");
+    } finally {
+      setExporting(false);
+    }
   };
   const restore = async (f: File) => {
     if (f.size > 30 * 1024 * 1024) return toast("文件太大，不像是学习备份。", "warn");
-    const r = importBackup(await f.text());
-    toast(r.ok ? `已恢复 ${r.cards} 个词的记忆` : r.error, r.ok ? "ok" : "warn");
+    try {
+      const text = await f.text();
+      let data: unknown;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        return toast("文件不是有效的 JSON。", "warn");
+      }
+      if (!data || typeof data !== "object" || !("app" in data) || data.app !== "word-atlas" || !("version" in data) || data.version !== 2 || !("progress" in data) || !data.progress || typeof data.progress !== "object")
+        return toast("这不是词光的学习备份。", "warn");
+      if (!("datasetId" in data.progress) || data.progress.datasetId !== atlas.id)
+        return toast("备份来自另一个词库，请先切换到对应词库。", "warn");
+      if (!confirm("导入将替换这台设备当前词库的学习记录和设置。建议先导出当前备份。确定恢复？")) return;
+      const r = importBackup(text);
+      toast(r.ok ? `已恢复 ${r.cards} 个词的记忆` : r.error, r.ok ? "ok" : "warn");
+    } catch {
+      toast("无法读取备份，请重新选择文件。", "warn");
+    }
   };
   const maxF = Math.max(1, ...stats.forecast);
 
   return (
     <div className="page me">
       <header className="page-head">
-        <p className="eyebrow">我的</p>
-        <h1 className="display">你的星空</h1>
+        <h1 className="display">我的</h1>
       </header>
 
       <section className="stat-strip">
@@ -91,7 +112,6 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
         <section className="panel">
           <h3 className="eyebrow">过去 20 周</h3>
           <Heatmap days={progress.days} />
-          <p className="muted">一格是一天，颜色越深，那天答得越多。「长期记住」指记忆稳定度超过 21 天。</p>
         </section>
 
         <section className="panel">
@@ -109,7 +129,7 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
 
         <section className="panel settings">
           <h3 className="eyebrow">学习设置</h3>
-          <Field label="每日新词" hint="复习不设上限，算法只安排快要遗忘的词。">
+          <Field label="每日新词">
             <div className="segmented">
               {[5, 10, 15, 20, 30].map((n) => (
                 <button key={n} className={settings.dailyNew === n ? "is-on" : ""} onClick={() => set({ dailyNew: n })}>
@@ -118,7 +138,7 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
               ))}
             </div>
           </Field>
-          <Field label="从哪个难度开始" hint="跳过已经熟悉的低级别词。">
+          <Field label="起始难度">
             <div className="segmented">
               {atlas.cefr.map((l, i) => (
                 <button key={l} className={settings.startLevel === i ? "is-on" : ""} onClick={() => set({ startLevel: i })}>
@@ -127,7 +147,7 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
               ))}
             </div>
           </Field>
-          <Field label="目标记忆率" hint="越高复习越频繁。90% 是大多数人的甜点。">
+          <Field label="目标记忆率">
             <div className="segmented">
               {[0.85, 0.9, 0.95].map((n) => (
                 <button key={n} className={settings.retention === n ? "is-on" : ""} onClick={() => set({ retention: n })}>
@@ -166,7 +186,7 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
           <Toggle label="开屏动画（每天一次）" on={settings.splash} set={(v) => set({ splash: v })} />
           <Toggle label="复习时加入拼写题" on={settings.spell} set={(v) => set({ spell: v })} />
           {privateAvailable && (
-            <Field label="词库" hint="私人词库只在本机开发服务器中可用，不会被打包发布。">
+            <Field label="词库">
               <div className="segmented">
                 <button className={settings.dataset === "open" ? "is-on" : ""} onClick={() => set({ dataset: "open" })}>
                   开放图鉴
@@ -181,16 +201,19 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
 
         <section className="panel">
           <h3 className="eyebrow">数据</h3>
-          <p className="muted">进度只存在这台设备的浏览器里：没有账号，没有服务器。换设备时，导出备份再导入即可。</p>
-          {saveError && <p className="warn-text">浏览器拒绝保存（可能是隐私模式或空间已满）。请尽快导出备份。</p>}
+          {saveError && <p className="warn-text">设备未能保存进度（可能是隐私模式或空间已满）。请尽快导出备份。</p>}
           <div className="data-actions">
-            <button className="btn btn-ghost" onClick={download}>
-              <Download size={18} /> 导出备份
+            <button className="btn btn-ghost" onClick={download} disabled={exporting} aria-busy={exporting}>
+              <Download size={18} /> {exporting ? "正在导出…" : "导出备份"}
             </button>
             <button className="btn btn-ghost" onClick={() => file.current?.click()}>
               <Upload size={18} /> 导入备份
             </button>
-            <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => e.target.files?.[0] && restore(e.target.files[0]).finally(() => (e.target.value = ""))} />
+            <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => {
+              const input = e.currentTarget;
+              const selected = input.files?.[0];
+              if (selected) void restore(selected).finally(() => (input.value = ""));
+            }} />
             <button
               className="btn btn-ghost btn-danger"
               onClick={() => {
@@ -209,12 +232,11 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="field">
       <div>
         <b>{label}</b>
-        {hint && <small>{hint}</small>}
       </div>
       {children}
     </div>

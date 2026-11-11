@@ -13,6 +13,8 @@ import { Onboarding } from "./pages/Onboarding";
 import { Practice } from "./pages/Practice";
 import { Today } from "./pages/Today";
 import { cue } from "./lib/sound";
+import { syncSystemBars, useNativeRuntime } from "./lib/native";
+import { useMobileViewport } from "./lib/viewport";
 import { store, useStore } from "./store/store";
 import { EntryView } from "./ui/EntryView";
 import { AmbienceController, AmbiencePicker } from "./ui/Ambience";
@@ -35,8 +37,15 @@ function useTheme() {
     const root = document.documentElement;
     if (theme === "system") root.removeAttribute("data-theme");
     else root.setAttribute("data-theme", theme);
-    const dark = theme === "dark" || (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#0D1120" : "#F6F1E7");
+    const media = matchMedia("(prefers-color-scheme: dark)");
+    const sync = () => {
+      const dark = theme === "dark" || (theme === "system" && media.matches);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#090d1b" : "#F6F1E7");
+      syncSystemBars(dark);
+    };
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
   }, [theme]);
   return theme;
 }
@@ -92,12 +101,15 @@ export default function App() {
 }
 
 function Shell({ privateAvailable }: { privateAvailable: boolean }) {
+  useMobileViewport();
+  useNativeRuntime();
   const { route, word } = useLocation();
   const onboarded = useStore((s) => s.settings.onboarded);
   const theme = useStore((s) => s.settings.theme);
   const [palette, setPalette] = useState(false);
   const [splash, setSplash] = useState(shouldShowSplash);
   const focus = route.page === "learn";
+  const homeHeader = route.page === "today";
 
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
@@ -122,19 +134,12 @@ function Shell({ privateAvailable }: { privateAvailable: boolean }) {
   const dark = theme === "dark" || (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
 
   return (
-    <div className={`app ${focus ? "is-focus" : ""}`}>
-      {!focus && (
+    <div className={`app ${focus ? "is-focus" : ""} ${homeHeader ? "has-home-header" : ""}`}>
+      {homeHeader && (
         <header className="topbar">
           <a className="topbar-logo" href="#/" aria-label="词光 Word Atlas 首页">
             <Logo />
           </a>
-          <nav className="topnav" aria-label="主导航">
-            {NAV.map(({ page, label }) => (
-              <a key={page} href={page === "today" ? "#/" : `#/${page}`} className={route.page === page ? "is-on" : ""} aria-current={route.page === page ? "page" : undefined}>
-                {label}
-              </a>
-            ))}
-          </nav>
           <div className="topbar-tools">
             <button className="search-pill" onClick={() => setPalette(true)} aria-label="搜索单词">
               <Search size={17} />
@@ -165,7 +170,6 @@ function Shell({ privateAvailable }: { privateAvailable: boolean }) {
         <footer className="footer">
           <Logo compact />
           <p>
-            一词一画，点亮雅思 · 免费开源 ·{" "}
             <a href={REPO_URL} target="_blank" rel="noreferrer">
               GitHub
             </a>{" "}

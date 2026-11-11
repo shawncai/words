@@ -1,145 +1,48 @@
-<div align="center">
+# Word Atlas · Offline Android Edition
 
-<a href="https://0xlei.tech/words/"><img src="docs/assets/cover-v2.jpg" alt="词光 · Word Atlas — an illustrated world of words" width="100%"></a>
+An independent Android adaptation of [designfuchen/word-atlas](https://github.com/designfuchen/word-atlas), based on upstream commit [`c70d57d2`](https://github.com/designfuchen/word-atlas/commit/c70d57d2b697f4de6ad512c62ba9495c4e5dc61c).
 
-# Word Atlas · 词光
+The original application, vocabulary, illustrations, recordings and learning model are by **designfuchen and Word Atlas contributors**. This repository is maintained by [shawncai](https://github.com/shawncai) for Android packaging, mobile layouts and foldable window support. It is not an official Android release from the upstream author.
 
-**See the word. Hear it. Make it yours.**
+[中文说明](README.md) · [Android build guide](docs/android.md) · [Dependency review](docs/android-dependencies.md)
 
-7,298 IELTS words · Original illustrations · UK & US audio · Spaced repetition
+## Features and changes
 
-[**Try Word Atlas ↗**](https://0xlei.tech/words/)　 /　 [48-second film](docs/assets/launch.mp4)　 /　 [Get the dataset](data/)　 /　 [简体中文](README.md)
+- 7,298 illustrated vocabulary entries, UK/US pronunciation, examples and FSRS review.
+- Daily learning, four quiz types, search, bookmarks, an interactive word galaxy, typing practice and statistics.
+- A Capacitor Android app with the existing dataset and media bundled for offline use.
+- Android back navigation, lifecycle handling, keyboard/safe-area support, backup export/import and system sharing.
+- Responsive cover-screen and unfolded layouts that retain learning and input state when the window changes size.
 
-[![Code: MIT](https://img.shields.io/badge/Code-MIT-17283B?style=flat-square)](LICENSE)
-[![Dataset: CC BY 4.0](https://img.shields.io/badge/Dataset-CC_BY_4.0-AD5038?style=flat-square)](CONTENT_LICENSE.md)
+No account, backend or API key is required to use or build the existing offline application. Progress stays on the device. Missing recordings may use device speech when available.
 
-<br>
+## Development
 
-**The Word Atlas iOS app beta is open and free: [api.billswise.cn/app](https://api.billswise.cn/app/)**
-
-[![Follow @yangleiocx3](https://img.shields.io/badge/Follow_me-@yangleiocx3-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/yangleiocx3)
-
-</div>
-
----
-
-Word Atlas is an illustrated IELTS vocabulary app for Chinese-speaking learners. Connect words with scenes and pronunciation, practise active recall, and return to them with FSRS spaced repetition. No account required. Learning progress stays on your device.
-
-> **Version scope:** This repository contains the open-source foundation of Word Atlas and its dataset. The hosted website evolves separately and may have different features. The code and dataset here remain available under their respective MIT and CC BY 4.0 licenses.
-
-[Preview](#preview) · [Learning loop](#learning-loop) · [Quick start](#quick-start) · [Open dataset](#open-dataset) · [Contributing](#contributing)
-
-## Preview
-
-### A vocabulary atlas you can listen to and practise with
-
-<img src="docs/assets/atlas-desktop.jpg" alt="Open-source edition: desktop vocabulary atlas" width="100%">
-
-<table>
-<tr>
-<td width="50%"><img src="docs/assets/today-mobile.jpg" alt="Daily study plan on mobile" width="100%"></td>
-<td width="50%"><img src="docs/assets/word-mobile.jpg" alt="Illustrated word card with pronunciation and examples" width="100%"></td>
-</tr>
-<tr><td align="center">A plan for today</td><td align="center">A scene for every word</td></tr>
-</table>
-
-<sub>Actual screenshots of the repository edition. The header is a conceptual brand illustration.</sub>
-
-### Watch your vocabulary take shape
-
-<img src="docs/assets/galaxy.jpg" alt="Vocabulary galaxy showing learning progress across topics" width="100%">
-
-Explore 19 topic groups, rotate and zoom the galaxy, and select a star to open its word card. Brightness reflects learning status. Built with WebGL2, with a fallback for unsupported devices.
-
-<details>
-<summary><b>Watch the 48-second introduction</b></summary>
-
-<a href="docs/assets/launch.mp4"><img src="docs/assets/launch-preview.webp" alt="Watch the Word Atlas introduction" width="100%"></a>
-
-[Play the full film with sound](docs/assets/launch.mp4)
-
-</details>
-
-## Learning loop
-
-| Step | What you do |
-| :--- | :--- |
-| **See** | Explore an illustration, bilingual definitions, two original examples, collocations and usage notes. |
-| **Hear** | Switch between UK and US pronunciation and listen to example sentences. A subset includes audio for the second example. |
-| **Recall** | Practise meaning-to-word, illustrated cloze, listening recognition and spelling. |
-| **Review** | Let FSRS schedule reviews based on your history. Only the first answer counts toward accuracy. |
-| **Keep** | Track progress in the galaxy, practise typing separately, and export or restore your local progress. |
-
-**Local first.** Visited entries and media can be cached for offline use. Export a progress backup before moving to another device.
-
-Listen to a sample: **abandon** — [UK](public/atlas/audio/uk/abandon.mp3) · [US](public/atlas/audio/us/abandon.mp3) · [Example](public/atlas/audio/ex/abandon.mp3).
-
-## Quick start
-
-Requires **Node.js 20+** and npm. This repository includes the full image and audio collection, so the initial download can take time.
+Use Node.js **22.22.3** through nvm and pnpm **8.15.8**.
 
 ```bash
-git clone --depth 1 https://github.com/designfuchen/word-atlas.git
-cd word-atlas
-npm ci
-npm run dev
+git clone https://github.com/shawncai/words.git
+cd words
+source "$HOME/.nvm/nvm.sh"
+nvm install
+nvm use
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-Open **http://localhost:5188**.
+Open <http://localhost:5188>. The repository includes several hundred MB of media. Android builds require JDK 21 and Android SDK 36; run `pnpm android:build` and follow [the build/install guide](docs/android.md). The current debug APK is approximately 671 MB and is generated locally rather than tracked in Git.
 
-```bash
-npm test             # Unit tests
-npm run check:atlas  # Dataset and media validation
-npm run build        # Production build in dist/
-```
+Run `pnpm test`, `pnpm check:atlas`, `pnpm check:splash` and `pnpm build`. With the dev server running and Chrome installed, run `pnpm check:mobile`, `pnpm check:interface`, `pnpm check:foldable` and `pnpm check:motion`.
 
-For a subpath deployment: `ATLAS_BASE=/words/ npm run build`. See the [deployment guide](docs/deployment.md).
+Android behavior has been tested on SM-N9760 / Android 12. Foldable layouts have browser emulation coverage; Galaxy Z Fold8 Ultra hardware testing is still pending. Keep the same package name and signing key for updates, use `adb install -r`, and export backups before moving devices.
 
-**Stack:** React 19 · TypeScript · Vite · ts-fsrs · WebGL2
+## Attribution and licensing
 
-## Open dataset
+- Code and interface: [MIT](LICENSE), preserving the Word Atlas contributors copyright notice.
+- Vocabulary, illustrations and word recordings: **Word Atlas contributors**, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); see [CONTENT_LICENSE.md](CONTENT_LICENSE.md).
+- This adaptation changes application packaging, interface and runtime behavior. The upstream learning content is unchanged.
+- Third-party libraries and fonts retain their own licenses, including SIL OFL 1.1 for Fraunces.
 
-Use the app as it is, or build your own learning tools, Anki decks and research projects.
+The upstream content was created with generative AI and synthesized speech and has not been individually proofread. It may contain errors and is not an official IELTS word list.
 
-| Resource | Repository edition | Download / documentation |
-| :--- | :--- | :--- |
-| Entries | **7,298**, CEFR A1–C2, 19 topics | [JSON](data/word-atlas.json) · [CSV](data/word-atlas.csv) |
-| Examples | **14,596**, everyday and IELTS contexts, with Chinese translations | [Schema](docs/dataset.md) |
-| Illustrations | **7,298**, 512 px WebP plus thumbnails | [Images](public/atlas/img/) |
-| Recordings | **22,905**, UK/US words and example sentences | [Audio](public/atlas/audio/) |
-
-```python
-import json
-from pathlib import Path
-
-words = json.loads(Path("data/word-atlas.json").read_text(encoding="utf-8"))
-b2_environment = [w for w in words if w["cefr"] == "B2" and w["topic"] == "environment"]
-```
-
-### Provenance and limitations
-
-Text and illustrations were generated for this project using AI; speech was synthesized with ElevenLabs. Automated structure and consistency checks have been performed, but **the entire collection has not been manually reviewed**. Definitions, examples, illustrations or pronunciation may contain errors. This is not an official IELTS list and does not promise score improvements.
-
-[Generation pipeline](docs/pipeline.md) · [Learning model](docs/learning-model.md) · [Scripts](scripts/atlas/)
-
-## Contributing
-
-Please include the **word ID, reproduction steps and expected result** when reporting a problem. For vocabulary corrections, reliable dictionary references are welcome.
-
-- [Report an issue](https://github.com/designfuchen/word-atlas/issues/new/choose)
-- [Contribution guide](CONTRIBUTING.md)
-- [Security policy](SECURITY.md)
-
-## License
-
-| Scope | License |
-| :--- | :--- |
-| Application code | [MIT](LICENSE) |
-| Vocabulary text, illustrations and word recordings | [CC BY 4.0](CONTENT_LICENSE.md); credit “Word Atlas contributors（词光）” |
-| Dependencies and fonts | Their respective licenses |
-
----
-
-Made by [@designfuchen](https://github.com/designfuchen). Follow the build on [X · @yangleiocx3](https://x.com/yangleiocx3).
-
-If Word Atlas helps you, consider starring the repository or sharing it with another learner.
+Report adaptation issues at [shawncai/words](https://github.com/shawncai/words/issues). Never attach credentials, signing keys or private learning backups.

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Atlas, WordRef } from "../atlas/types";
 import { useAtlas } from "../atlas/context";
 import { openWord } from "../lib/router";
+import { registerBackHandler } from "../lib/native";
 import { Illustration } from "./Illustration";
 
 export function searchAtlas(atlas: Atlas, raw: string, limit = 40): WordRef[] {
@@ -41,8 +42,10 @@ export function Palette({ open, onClose }: { open: boolean; onClose: () => void 
     }
   }, [open]);
   useEffect(() => setSel(0), [q]);
+  useEffect(() => open ? registerBackHandler(onClose) : undefined, [open, onClose]);
   if (!open) return null;
   const pick = (w: WordRef) => {
+    input.current?.blur();
     onClose();
     openWord(w.id);
   };

@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "bounce-easing",
+        "value": "var(--spring)",
+        "files": [
+          "src/styles/app.css"
+        ],
+        "createdAt": "2026-11-11T07:07:41.013Z",
+        "reason": "Agent: toast and correct-answer feedback exactly match upstream c70d57d; the user explicitly requested preserving the original design, so this adaptation retains those intentional animations."
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "cubic-bezier(0.34, 1.4, 0.5, 1)",
+        "files": [
+          "src/styles/app.css"
+        ],
+        "createdAt": "2026-11-11T07:07:41.344Z",
+        "reason": "Agent: the original spring token is unchanged from upstream c70d57d and supports the retained toast and answer feedback; preserving the original visual design is part of the approved mobile adaptation."
+      }
+    ]
+  }
+}
