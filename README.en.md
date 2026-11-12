@@ -30,7 +30,9 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open <http://localhost:5188>. The repository includes several hundred MB of media. Android builds require JDK 21 and Android SDK 36; run `pnpm android:build` and follow [the build/install guide](docs/android.md). The current debug APK is approximately 671 MB and is generated locally rather than tracked in Git.
+Open <http://localhost:5188>. The repository includes several hundred MB of media. Android builds require JDK 21 and Android SDK 36; run `pnpm android:build` and follow [the build/install guide](docs/android.md). Download the approximately 670 MB APK and SHA-256 checksum from [GitHub Releases](https://github.com/shawncai/words/releases/latest). APKs are release assets, not tracked in Git.
+
+`pnpm android:release` produces `android/app/build/outputs/apk/release/app-release.apk` with debugging disabled (version 1.0.0, build 2). It reuses the existing local debug signing key to support updates from earlier personal installs, and stops if that key is missing. This is a sideload release, not an app-store distribution. Signing keys, local SDK settings and personal learning data are never uploaded.
 
 Run `pnpm test`, `pnpm check:atlas`, `pnpm check:splash` and `pnpm build`. With the dev server running and Chrome installed, run `pnpm check:mobile`, `pnpm check:interface`, `pnpm check:foldable` and `pnpm check:motion`.
 

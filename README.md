@@ -53,7 +53,9 @@ adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 adb shell am start -n com.zhangcuncai.wordatlas/.MainActivity
 ```
 
-完整离线资源约 665 MB，当前 debug APK 约 671 MB。APK、签名密钥、本机 SDK 配置及个人学习数据不纳入源码仓库，安装包需自行构建。
+完整离线资源约 665 MB，APK 约 670 MB。可在 [GitHub Releases](https://github.com/shawncai/words/releases/latest) 下载安装包及 SHA-256 校验文件。APK 作为 Release 附件发布，不纳入 Git 源码历史；签名密钥、本机 SDK 配置及个人学习数据不上传。
+
+`pnpm android:release` 构建关闭调试的 release APK，输出到 `android/app/build/outputs/apk/release/app-release.apk`。为兼容此前个人安装，该命令沿用本机已有的 debug 签名；缺少原签名时会停止。此包用于直接安装，不是应用商店发行包。构建号为 2，版本为 1.0.0。
 
 更新时保留相同包名与签名，使用 `adb install -r`。debug 签名默认由本机 Android 工具生成，换电脑构建前需自行妥善保留签名。不要通过卸载解决签名冲突，以免丢失本地进度；换设备前请导出备份。
 

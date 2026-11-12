@@ -15,6 +15,7 @@
     "format": "prettier --write src vite.config.ts scripts/*.mjs package.json tsconfig.json",
     "android:sync": "pnpm build && cap sync android",
     "android:build": "bash scripts/build-android.sh",
+    "android:release": "bash scripts/build-android.sh release",
     "android:open": "cap open android",
     "check:mobile": "node scripts/check-mobile.mjs",
     "check:splash": "node scripts/check-splash.mjs",
